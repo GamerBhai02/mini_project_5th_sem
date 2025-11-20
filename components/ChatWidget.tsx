@@ -349,7 +349,21 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
 
         for (const call of functionCalls) {
             if (call.name === 'read_document') {
-                const docName = call.args.documentName as string;
+                // Check if call.args is defined
+                const docName = call.args?.documentName as string;
+                
+                if (!docName) {
+                    console.warn("No document name provided in tool call.");
+                    parts.push({
+                        functionResponse: {
+                            name: 'read_document',
+                            id: call.id,
+                            response: { error: "Document name missing in arguments." }
+                        }
+                    });
+                    continue;
+                }
+
                 const doc = documents.find(d => d.name === docName);
 
                 if (doc) {
@@ -402,8 +416,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
 
         // Send the tool responses (and potential file data) back to the model
         if (parts.length > 0) {
-             // Cast parts to any to bypass strict typing if necessary, 
-             // though standard SDK should support Part[] in message
+             // Cast parts to any to bypass strict typing if necessary
              response = await chatRef.current.sendMessage({ message: parts as any });
         } else {
             break; // Should not happen if functionCalls existed, but safe break
@@ -413,7 +426,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
       // 3. Display Final Response
       const botMessage: Message = {
         id: Date.now().toString() + 'b',
-        text: response.text,
+        text: response.text || "", // Handle potentially undefined response text
         sender: MessageSender.BOT,
       };
       setMessages((prevMessages) => [...prevMessages, botMessage]);
