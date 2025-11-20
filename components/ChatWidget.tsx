@@ -349,7 +349,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
 
         for (const call of functionCalls) {
             if (call.name === 'read_document') {
-                const docName = call.args.documentName as string;
+                const docName = call.args?.documentName as string;
                 const doc = documents.find(d => d.name === docName);
 
                 if (doc) {
@@ -413,7 +413,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
       // 3. Display Final Response
       const botMessage: Message = {
         id: Date.now().toString() + 'b',
-        text: response.text,
+        text: response.text || 'I apologize, but I received an empty response. Please try asking your question again.',
         sender: MessageSender.BOT,
       };
       setMessages((prevMessages) => [...prevMessages, botMessage]);
