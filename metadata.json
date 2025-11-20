@@ -1,0 +1,7 @@
+{
+  "name": "College AI Chatbot",
+  "description": "An intelligent, multilingual chatbot for a college website. It answers queries about admissions and studies, features voice input, text-to-speech, a simulated live agent chat, and an admin panel for managing knowledge base documents.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
