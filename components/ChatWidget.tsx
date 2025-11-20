@@ -232,7 +232,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
     If a user asks a question that can be answered by one of these documents, use the 'read_document' tool to retrieve its content.
     Once you have the document content, answer the user's question based on it.
     Do not mention "I am reading the file" unless necessary. Just provide the answer.
-    If the answer is not in the documents, use your general knowledge but mention that the info might be general.`;
+    If the answer is not in the documents, use your general knowledge and google search or your ai capabilities but mention that the info might be general.`;
 
     const readDocTool: FunctionDeclaration = {
         name: 'read_document',
