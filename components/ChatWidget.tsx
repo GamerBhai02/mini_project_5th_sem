@@ -222,27 +222,40 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
   useEffect(() => {
     if (!aiRef.current) return;
 
-    const docListString = documents.map(d => `- ${d.name}: ${d.description}`).join('\n');
-    const systemInstruction = `You are a friendly and helpful assistant for New Horizon College of Engineering. 
-    Your role is to assist anyone with questions about the college.
+    const docListString = documents.length > 0 
+      ? documents.map(d => `- ${d.name}: ${d.description}`).join('\n')
+      : "No documents currently available in the knowledge base.";
+
+    const systemInstruction = `You are the official AI Assistant for New Horizon College of Engineering (NHCE).
+    Your goal is to provide accurate and helpful information specifically about the college.
+
+    **STRICT SCOPE RULES:**
+    1. You must **ONLY** answer questions related to New Horizon College of Engineering, its courses, campus, admissions, facilities, or events.
+    2. If a user asks about general topics (e.g., "Who is the President of the US?", "How to cook pasta", "Weather in London") that are NOT related to the college, you must politely refuse and say: "I can only answer questions related to New Horizon College of Engineering."
+
+    **INFORMATION RETRIEVAL HIERARCHY:**
+    Step 1: **Check Internal Documents.** 
+    Look at the "Available Documents" list below. If the user's question refers to specific details likely found there (e.g., specific tuition fees, a specific lab manual, a detailed circular), you MUST use the 'read_document' tool to get the ground truth.
     
-    You have access to the following documents in the knowledge base:
+    Step 2: **Google Search (College Context Only).**
+    If the answer is NOT in the available documents, but is still about NHCE (e.g., "What is the NIRF ranking of NHCE?", "Latest news about New Horizon College", "Distance from Majestic to NHCE"), you MUST use the 'googleSearch' tool.
+    
+    Step 3: **General Knowledge (College Context Only).**
+    If tools fail, use your internal knowledge, but strictly keep it about NHCE.
+
+    **Available Documents in Knowledge Base:**
     ${docListString}
-    
-    If a user asks a question that can be answered by one of these documents, use the 'read_document' tool to retrieve its content.
-    Once you have the document content, answer the user's question based on it.
-    Do not mention "I am reading the file" unless necessary. Just provide the answer.
-    If the answer is not in the documents, use your general knowledge and google search or your ai capabilities but mention that the info might be general.`;
+    `;
 
     const readDocTool: FunctionDeclaration = {
         name: 'read_document',
-        description: 'Read the content of a document from the knowledge base. Use this when the user asks about a specific topic covered by the available documents.',
+        description: 'Read the content of a specific document from the knowledge base. Use this ONLY when the user query relates to a topic listed in the Available Documents descriptions.',
         parameters: {
           type: Type.OBJECT,
           properties: {
             documentName: {
               type: Type.STRING,
-              description: 'The exact name of the document to read, as listed in the available documents.'
+              description: 'The exact name of the document to read, as listed in the available documents list.'
             }
           },
           required: ['documentName']
@@ -253,7 +266,10 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
         model: 'gemini-2.5-flash',
         config: {
           systemInstruction: systemInstruction,
-          tools: [{ functionDeclarations: [readDocTool] }],
+          tools: [
+            { functionDeclarations: [readDocTool] },
+            { googleSearch: {} }
+          ],
         },
     });
 
