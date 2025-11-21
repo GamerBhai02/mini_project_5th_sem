@@ -229,6 +229,13 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
     const systemInstruction = `You are the official AI Assistant for New Horizon College of Engineering (NHCE).
     Your goal is to provide accurate and helpful information specifically about the college.
 
+    **CORE FACTS (ALWAYS USE THESE IF ASKED):**
+    - Chairman: Dr. Mohan Manghnani
+    - Principal: Dr. Manjunatha
+    - Location: Bellandur Main Road, Bangalore, India
+    - Affiliation: Visvesvaraya Technological University (VTU)
+    - Accreditation: NAAC 'A' Grade, NBA Accredited
+
     **STRICT SCOPE RULES:**
     1. You must **ONLY** answer questions related to New Horizon College of Engineering, its courses, campus, admissions, facilities, or events.
     2. If a user asks about general topics (e.g., "Who is the President of the US?", "How to cook pasta", "Weather in London") that are NOT related to the college, you must politely refuse and say: "I can only answer questions related to New Horizon College of Engineering."
@@ -237,11 +244,8 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
     Step 1: **Check Internal Documents.** 
     Look at the "Available Documents" list below. If the user's question refers to specific details likely found there (e.g., specific tuition fees, a specific lab manual, a detailed circular), you MUST use the 'read_document' tool to get the ground truth.
     
-    Step 2: **Google Search (College Context Only).**
-    If the answer is NOT in the available documents, but is still about NHCE (e.g., "What is the NIRF ranking of NHCE?", "Latest news about New Horizon College", "Distance from Majestic to NHCE"), you MUST use the 'googleSearch' tool.
-    
-    Step 3: **General Knowledge (College Context Only).**
-    If tools fail, use your internal knowledge, but strictly keep it about NHCE.
+    Step 2: **General Knowledge (College Context Only).**
+    If the answer is NOT in the available documents, or if you checked a document and the information was missing, DO NOT say "I cannot answer". Instead, rely on your internal knowledge or the CORE FACTS above to answer questions about NHCE.
 
     **Available Documents in Knowledge Base:**
     ${docListString}
@@ -267,8 +271,9 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
         config: {
           systemInstruction: systemInstruction,
           tools: [
-            { functionDeclarations: [readDocTool] },
-            { googleSearch: {} }
+            { functionDeclarations: [readDocTool] }
+            // Google Search is currently incompatible with Function Declarations in the same session for this model API.
+            // Removed { googleSearch: {} } to prevent "Tool use with function calling is unsupported" error.
           ],
         },
     });
@@ -398,7 +403,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
                                 functionResponse: {
                                     name: 'read_document',
                                     id: call.id,
-                                    response: { result: `Successfully retrieved content for ${docName}. See the attached data.` }
+                                    response: { result: `Successfully retrieved content for ${docName}. See the attached data. If this data does not contain the answer, fallback to internal knowledge.` }
                                 }
                             });
                             parts.push({
@@ -608,7 +613,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={isRecording ? 'Listening...' : 'Ask a question...'}
-            className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-700 transition"
+            className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-700 text-white placeholder-slate-400 transition"
             disabled={isLoading || !!error}
             readOnly={isRecording}
             aria-label="Chat input"
