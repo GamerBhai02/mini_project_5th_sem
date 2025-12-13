@@ -313,11 +313,25 @@ const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
               <form onSubmit={handleLogin} className="space-y-4">
                  <div>
                     <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email</label>
-                    <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-slate-900" />
+                    <input 
+                      type="email" 
+                      id="email" 
+                      value={email} 
+                      onChange={(e) => setEmail(e.target.value)} 
+                      required 
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100" 
+                    />
                  </div>
                  <div>
                     <label htmlFor="password-input" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Password</label>
-                    <input type="password" id="password-input" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-slate-900" />
+                    <input 
+                      type="password" 
+                      id="password-input" 
+                      value={password} 
+                      onChange={(e) => setPassword(e.target.value)} 
+                      required 
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100" 
+                    />
                  </div>
                  {error && <p className="text-red-500 text-sm text-center">{error}</p>}
                  <button type="submit" className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">
@@ -384,7 +398,7 @@ const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
                     value={newDescription}
                     onChange={(e) => setNewDescription(e.target.value)}
                     placeholder="e.g., Updated 2024 tuition fees"
-                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-slate-900"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
                   />
                 </div>
                 <button
